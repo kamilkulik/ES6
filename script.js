@@ -732,3 +732,11 @@ const johnAthlete6 = new Athlete6('John', 1990, 'swimmer', 3, 10);
 
 johnAthlete6.wonMedals();
 johnAthlete6.calculateAge();
+
+
+
+/////////////////////////////////////
+/// Lecture: CHALLENGE
+/////////////////////////////////////
+
+
