@@ -97,7 +97,7 @@ function calcAge(year) {
     return 2016 - year;
 }
 
-//template literals
+//TEMPLATE LITERALS
 
 
 // ES5
@@ -694,7 +694,7 @@ johnAthlete5.wonMedal();
 */
 
 // ES6
-
+/*
 
 // SUPERCLASS:
 class Person6 {
@@ -732,11 +732,118 @@ const johnAthlete6 = new Athlete6('John', 1990, 'swimmer', 3, 10);
 
 johnAthlete6.wonMedals();
 johnAthlete6.calculateAge();
-
+*/
 
 
 /////////////////////////////////////
-/// Lecture: CHALLENGE
+/// CHALLENGE
 /////////////////////////////////////
 
-// change
+class TownElement {
+    constructor(name, buildYear) {
+        this.name = name;
+        this.buildYear = buildYear;
+    }
+};
+
+class Park extends TownElement {
+    constructor(name, buildYear, numberOfTrees, area) {
+        super(name, buildYear);
+        this.numberOfTrees = numberOfTrees;
+        this.area = area;
+    }
+
+    treeDensity() {
+        return this.numberOfTrees / this.area;
+    }
+
+    age() {
+        return new Date().getFullYear() - this.buildYear;
+    }
+};
+
+class Street extends TownElement {
+    constructor(name, buildYear, length, size = 'normal') {
+        super(name, buildYear);
+        this.length = length;
+        this.classification();
+    }
+
+    classification() {
+        if (this.length < 0.5) {
+            this.size = 'small';
+        } else if (this.length >= 0.5 && this.length < 1) {
+            this.size = 'normal';
+        } else if (this.length >= 1 && this.length < 2) {
+            this.size = 'big'; 
+        } else {
+            this.size = 'huge';
+        }
+        return this.size;
+    }
+};
+
+const poludniowy = new Park('Poludniowy',1892,18000,0.25);
+const grabiszynski = new Park('Grabiszynski',1993,33000,0.48);
+const staszica = new Park('Stanislawa Staszica',1908,1000,0.055);
+const hubska = new Street('Hubska', 1882, 1.34);
+const bardzka = new Street('Bardzka', 1948, 1.6);
+const nyska = new Street('Nyska', 1945, .8);
+const legnicka = new Street('Legnicka', 1945, 3.55);
+
+console.log('-----PARKS REPORT-----');
+
+const report = new Map();
+report.set('park1', poludniowy);
+report.set('park2', grabiszynski);
+report.set('park3', staszica);
+report.set('street1', hubska);
+report.set('street2', bardzka);
+report.set('street3', nyska);
+report.set('street4', legnicka);
+
+// getting total number of parks and their average age
+
+let parkNo = 0;
+let totAge = 0;
+for (let [key, value] of report.entries()) {
+    if (key.includes('park')) {
+        parkNo++;
+        totAge += value.age();
+    }
+}
+console.log(`Our ${parkNo} parks have an average of ${totAge/parkNo} years.`);
+
+//displaying tree density for every park in the map
+
+for (let [key, value] of report.entries()) {
+    if (key.includes('park')) {
+        console.log(`${value.name} park has tree density of ${value.treeDensity()} per square kilometre.`); 
+    }  
+};
+
+// displaying name of each park in the map that has more than 1000 trees
+for (let [key, value] of report.entries()) {
+    if (key.includes('park') && value.numberOfTrees > 1000) {
+        console.log(`${value.name} park has more than 1000 trees.`);
+    }
+}
+
+console.log('-----STREETS REPORT-----');
+
+let totLength = 0;
+for (let [key, value] of report.entries()) {
+    if (key.includes('street')) {
+        totLength += value.length;
+    }
+}
+console.log(`Our 4 streets have a total length of ${totLength} km, and an average of ${totLength/4} km.`)
+
+for (let [key, value] of report.entries()) {
+    if (key.includes('street')) {
+        console.log(`${value.name} Street, built in ${value.buildYear}, is a ${value.size} street.`);
+    }
+}
+
+// solution 2 - store lines of report in a map
+// solution 3 - store functions as map values
