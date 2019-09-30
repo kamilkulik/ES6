@@ -250,7 +250,7 @@ var john = ['John', 26];
 
 // ES6
 
-// ARRAY 
+// ARRAY
 const [name,age] = ['john', 26];
 
 console.log(name);
@@ -750,100 +750,80 @@ class Park extends TownElement {
     constructor(name, buildYear, numberOfTrees, area) {
         super(name, buildYear);
         this.numberOfTrees = numberOfTrees;
-        this.area = area;
+        this.area = area; // km2
     }
 
     treeDensity() {
-        return this.numberOfTrees / this.area;
-    }
-
-    age() {
-        return new Date().getFullYear() - this.buildYear;
+        const density = this.numberOfTrees / this.area;
+        console.log(`${this.name} has a tree density of ${density} trees per square km`);
     }
 };
 
 class Street extends TownElement {
-    constructor(name, buildYear, length, size = 'normal') {
+    constructor(name, buildYear, length, size = 3) {
         super(name, buildYear);
         this.length = length;
-        this.classification();
+        this.size = size;
     }
 
-    classification() {
-        if (this.length < 0.5) {
-            this.size = 'small';
-        } else if (this.length >= 0.5 && this.length < 1) {
-            this.size = 'normal';
-        } else if (this.length >= 1 && this.length < 2) {
-            this.size = 'big'; 
-        } else {
-            this.size = 'huge';
-        }
-        return this.size;
+    classifyStreet() {
+        const classification = new Map();
+        classification.set(1, 'tiny');
+        classification.set(2, 'small');
+        classification.set(3, 'normal');
+        classification.set(4, 'big');
+        classification.set(5, 'huge');
+        console.log(`${this.name} street, built in ${this.buildYear}, is a ${classification.get(this.size)} street.`)
     }
 };
 
-const poludniowy = new Park('Poludniowy',1892,18000,0.25);
-const grabiszynski = new Park('Grabiszynski',1993,33000,0.48);
-const staszica = new Park('Stanislawa Staszica',1908,1000,0.055);
-const hubska = new Street('Hubska', 1882, 1.34);
-const bardzka = new Street('Bardzka', 1948, 1.6);
-const nyska = new Street('Nyska', 1945, .8);
-const legnicka = new Street('Legnicka', 1945, 3.55);
+// put all parks in an array
 
-console.log('-----PARKS REPORT-----');
+const allParks = [new Park('Poludniowy',1892,18000,0.25), new Park('Grabiszynski',1993,33000,0.48), new Park('Stanislawa Staszica',1908,1000,0.055)];
+const allStreets = [new Street('Hubska', 1882, 1.34, 2), new Street('Bardzka', 1948, 1.6), new Street('Nyska', 1945, .8, 1), new Street('Legnicka', 1945, 3.55, 5)];
 
-const report = new Map();
-report.set('park1', poludniowy);
-report.set('park2', grabiszynski);
-report.set('park3', staszica);
-report.set('street1', hubska);
-report.set('street2', bardzka);
-report.set('street3', nyska);
-report.set('street4', legnicka);
+// function to calculate SUM of all ages. Uses the reduce method which needs to have a input array of numbers.
+// input number of numbers (ages), comes from creating a new array via the .map method
+function calcAge(array) {
 
-// getting total number of parks and their average age
+    const sum = array.reduce((prev, cur, index, array) => prev + cur);
 
-let parkNo = 0;
-let totAge = 0;
-for (let [key, value] of report.entries()) {
-    if (key.includes('park')) {
-        parkNo++;
-        totAge += value.age();
-    }
-}
-console.log(`Our ${parkNo} parks have an average of ${totAge/parkNo} years.`);
-
-//displaying tree density for every park in the map
-
-for (let [key, value] of report.entries()) {
-    if (key.includes('park')) {
-        console.log(`${value.name} park has tree density of ${value.treeDensity()} per square kilometre.`); 
-    }  
+    return [sum, sum/array.length] // this is a desctructuring notation
 };
 
-// displaying name of each park in the map that has more than 1000 trees
-for (let [key, value] of report.entries()) {
-    if (key.includes('park') && value.numberOfTrees > 1000) {
-        console.log(`${value.name} park has more than 1000 trees.`);
+function reportParks(p) {
+    console.log('------PARKS REPORT------');
+
+    // avg Age
+    const ageArr = p.map(el => new Date().getFullYear() - el.buildYear);
+    
+    // below we use destructuring notation to define variables and assign them values via correspodning output of calcAge function which returns an array of results
+    const [total,avg] = calcAge(ageArr);
+    console.log(`Our ${p.length} parks have on average ${avg} years.`);
+
+    //console.log(`Our ${p.length} parks have an average of ${totAge/p.length} years`);
+    
+    // Density
+    for (let el of p) {
+        el.treeDensity();
     }
+
+    // over 1000 trees
+    //p.forEach(cur => cur.numberOfTrees > 1000 ? console.log(`${cur.name} has more than 1000 trees.`) : (""));
+    const i = p.map(el => el.numberOfTrees).findIndex(el => el >= 1000);
+    console.log(`${p[i].name} park has more than 1000 trees.`)
+
 }
 
-console.log('-----STREETS REPORT-----');
+function reportStreets(s) {
+    console.log('------STREETS REPORT------');
 
-let totLength = 0;
-for (let [key, value] of report.entries()) {
-    if (key.includes('street')) {
-        totLength += value.length;
-    }
-}
-console.log(`Our 4 streets have a total length of ${totLength} km, and an average of ${totLength/4} km.`)
-
-for (let [key, value] of report.entries()) {
-    if (key.includes('street')) {
-        console.log(`${value.name} Street, built in ${value.buildYear}, is a ${value.size} street.`);
-    }
+    // now we can reuse the calcAge function and feed it an array with length data
+    const lengths = s.map(el => el.length);
+    const [totLength, avgLength] = calcAge(lengths);
+    console.log(`Our ${s.length} have a total length of ${totLength}, and ${avgLength} km on average.`);
+    s.forEach(cur => cur.classifyStreet());
 }
 
-// solution 2 - store lines of report in a map
-// solution 3 - store functions as map values
+reportParks(allParks);
+reportStreets(allStreets);
